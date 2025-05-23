@@ -14,7 +14,13 @@ export default function Header({ isLoggedIn = false, user = {}, cartQuantity = 0
       <div className="w-full bg-white py-4 flex justify-center items-center">
         <h1 className="text-center">
           <Link href="/">
-            <Image src="/honey-bee.png" alt="Logo MielQualityS" width={150} height={50} />
+            <Image
+          src="/assets/img/logoHorizontaleHeader.png"
+          alt="Logo MielQualityS"
+          width={400}
+          height={100}
+          priority // Priorise le chargement (utile pour un logo en haut de page)
+        />
           </Link>
         </h1>
       </div>

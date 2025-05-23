@@ -1,0 +1,44 @@
+config_environnement:
+  nom: Said
+  format: markdown
+  fichier: Config_Environnement_Said.md
+
+  ide:
+    nom: Visual Studio Code
+    version: "1.100.2"
+    build: "848b80aeb52026648a8ff9f7c45a9b0a80641e2e"
+    architecture: x64
+
+  technologies:
+    langage_principal: TypeScript
+    framework: Next.js
+
+  backend:
+    sql: MySQL
+    nosql: MongoDB
+    integration: Next.js (API routes ou handlers)
+
+  arborescence_initiale:
+    - .next/
+    - app/
+    - components/
+    - controllers/
+    - db/
+    - lib/
+    - models/
+    - node_modules/
+    - public/
+    - styles/
+    - types/
+    - utils/
+
+  depot_git:
+    url: "https://github.com/SaidS9113/site-mqs"
+    contenu:
+      - README.md
+      - .gitignore
+      - Structure initiale fonctionnelle
+
+  simulateur:
+    applicable: false
+    remarque: "Projet web Next.js, simulateur non requis"
