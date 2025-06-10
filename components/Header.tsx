@@ -1,11 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { ShoppingBag, User } from 'lucide-react';
+import { useCart } from '@/lib/cartContext';
 
-export default function Header({ isLoggedIn = false, user = {}, cartQuantity = 0 }) {
-  // const isLoggedIn = true; // Exemple de simulation
-  // const user = { prenom: "Anthony", nom: "Dupont", idRole: "10" }; // Exemple utilisateur
-  // const cartQuantity = 3; // Exemple de quantité dans le panier
+export default function Header() {
+  const { cartQuantity } = useCart();
 
   return (
     <>
@@ -15,12 +16,12 @@ export default function Header({ isLoggedIn = false, user = {}, cartQuantity = 0
         <h1 className="text-center">
           <Link href="/">
             <Image
-          src="/assets/img/logoHorizontaleHeader.png"
-          alt="Logo MielQualityS"
-          width={400}
-          height={100}
-          priority // Priorise le chargement (utile pour un logo en haut de page)
-        />
+              src="/assets/img/logoHorizontaleHeader.png"
+              alt="Logo MielQualityS"
+              width={400}
+              height={100}
+              priority // Priorise le chargement (utile pour un logo en haut de page)
+            />
           </Link>
         </h1>
       </div>
@@ -62,21 +63,21 @@ export default function Header({ isLoggedIn = false, user = {}, cartQuantity = 0
               </>
             )} */}
             <Link href="/">Accueil</Link>
-            <Link href="/produits">Produits</Link>
+            <Link href="/products">Produits</Link>
           </nav>
 
           {/* Droite : icônes user + panier */}
           <div className="flex items-center space-x-4">
-            <Link href="/account" className="text-black">
+            <Link href="/login" className="text-black">
               <User className="h-6 w-6" />
             </Link>
             <Link href="/cart" className="text-black relative">
               <ShoppingBag className="h-6 w-6" />
-              {/* {cartQuantity > 0 && ( */}
-              <span className="absolute -top-2 -right-2 bg-[#F47B20] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                {cartQuantity}
-              </span>
-              {/* )} */}
+              {cartQuantity > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#F47B20] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartQuantity}
+                </span>
+              )}
             </Link>
           </div>
         </div>

@@ -68,7 +68,7 @@ const Footer = () => {
             <a href="#" className="hover:underline">Contact</a>
           </div>
           <p className="text-sm text-gray-600">
-            Copyright 2024 © MielQualityS | Réalisé par Monsieur.SAID.S
+            Copyright 2025 © MielQualityS | Réalisé par Monsieur.SAID.S
           </p>
         </div>
       </footer>
