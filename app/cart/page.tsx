@@ -25,7 +25,7 @@ export default function CartPage() {
           <ul className="space-y-6">
             {cart.map((item) => (
               <li
-                key={item.id}
+                 key={`${item.id}-${item.variant}`}
                 className="flex items-center gap-6 border-b pb-6"
               >
                 <Image
@@ -45,7 +45,7 @@ export default function CartPage() {
                   </p>
                 </div>
                 <button
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => removeFromCart(item.id, item.variant)}
                   className="text-black text-sm text-red-500 hover:underline"
                 >
                   Supprimer

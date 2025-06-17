@@ -1,0 +1,23 @@
+{
+  "_id": "ObjectId(\"6665d9b2f1d4e1a2b3c4d5e6\")",
+  "userId": "uuid-utilisateur",
+  "items": [
+    {
+      "variantId": 12,
+      "productName": "Miel de Lavande",
+      "poids": 500,
+      "quantity": 2,
+      "price": 9.90,
+      "dateAjout": "2025-06-10T14:32:00Z"
+    },
+    {
+      "variantId": 13,
+      "productName": "Miel de Châtaignier",
+      "poids": 250,
+      "quantity": 1,
+      "price": 5.50,
+      "dateAjout": "2025-06-10T14:33:00Z"
+    }
+  ],
+  "updatedAt": "2025-06-10T14:33:10Z"
+}

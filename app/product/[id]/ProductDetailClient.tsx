@@ -19,7 +19,7 @@ const products = [
       "Récolté de manière artisanale",
       "Certifié bio",
     ],
-    price: 12.5, // Prix pour 250g
+    price: 12.5, 
     imageUrl:
       "https://images.pexels.com/photos/9732366/pexels-photo-9732366.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
@@ -35,7 +35,7 @@ export default function ProductDetailClient({ productId }: { productId: string }
   const product = products.find((p) => p.id === parseInt(productId));
   const [selectedWeight, setSelectedWeight] = useState(weightOptions[0]);
   const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart(); // ✅
+  const { addToCart } = useCart();
 
   if (!product) return notFound();
 
@@ -49,6 +49,7 @@ export default function ProductDetailClient({ productId }: { productId: string }
       price: unitPrice,
       image: product.imageUrl,
       quantity,
+      variant: selectedWeight.label, // ✅ Important : on distingue le produit par son poids
     });
   };
 
