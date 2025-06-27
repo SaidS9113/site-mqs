@@ -1,0 +1,216 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id                               Int                @id @default(autoincrement())
+  name                             String             @db.VarChar(255)
+  description                      String?
+  stock_status                     String?            @default("in_stock") @db.VarChar(50)
+  sku                              String             @unique @db.VarChar(100)
+  image                            String?            @db.VarChar(500)
+  created_by                       Int?
+  updated_by                       Int?
+  created_at                       DateTime?          @default(now()) @db.Timestamp(6)
+  updated_at                       DateTime?          @default(now()) @updatedAt @db.Timestamp(6)
+  product_images                   product_images[]
+  product_variants                 product_variants[]
+  users_products_created_byTousers users?             @relation("products_created_byTousers", fields: [created_by], references: [id], onUpdate: NoAction, map: "fk_products_created_by")
+  users_products_updated_byTousers users?             @relation("products_updated_byTousers", fields: [updated_by], references: [id], onUpdate: NoAction, map: "fk_products_updated_by")
+
+  @@index([sku], map: "idx_products_sku")
+  @@index([stock_status], map: "idx_products_stock_status")
+  @@map("products")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model address {
+  id                              Int       @id @default(autoincrement())
+  street                          String    @db.VarChar(255)
+  city                            String    @db.VarChar(100)
+  postal_code                     String    @db.VarChar(20)
+  country                         String    @db.VarChar(100)
+  type                            String    @db.VarChar(50)
+  created_by                      Int?
+  updated_by                      Int?
+  created_at                      DateTime? @default(now()) @db.Timestamp(6)
+  updated_at                      DateTime? @default(now()) @db.Timestamp(6)
+  users_address_created_byTousers users?    @relation("address_created_byTousers", fields: [created_by], references: [id], onUpdate: NoAction, map: "fk_address_created_by")
+  users_address_updated_byTousers users?    @relation("address_updated_byTousers", fields: [updated_by], references: [id], onUpdate: NoAction, map: "fk_address_updated_by")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model order_items {
+  id                                  Int              @id @default(autoincrement())
+  order_id                            Int
+  product_variant_id                  Int
+  quantity                            Int
+  price                               Decimal          @db.Decimal(12, 2)
+  weight                              Decimal?         @db.Decimal(10, 3)
+  created_by                          Int?
+  updated_by                          Int?
+  created_at                          DateTime?        @default(now()) @db.Timestamp(6)
+  updated_at                          DateTime?        @default(now()) @db.Timestamp(6)
+  users_order_items_created_byTousers users?           @relation("order_items_created_byTousers", fields: [created_by], references: [id], onUpdate: NoAction, map: "fk_order_items_created_by")
+  orders                              orders           @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_order_items_order_id")
+  product_variants                    product_variants @relation(fields: [product_variant_id], references: [id], onUpdate: NoAction, map: "fk_order_items_product_variant_id")
+  users_order_items_updated_byTousers users?           @relation("order_items_updated_byTousers", fields: [updated_by], references: [id], onUpdate: NoAction, map: "fk_order_items_updated_by")
+
+  @@index([order_id], map: "idx_order_items_order_id")
+  @@index([product_variant_id], map: "idx_order_items_product_variant_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model orders {
+  id                             Int           @id @default(autoincrement())
+  user_id                        Int
+  order_number                   String        @unique @db.VarChar(50)
+  status                         String?       @default("pending") @db.VarChar(50)
+  total_amount                   Decimal       @db.Decimal(12, 2)
+  created_by                     Int?
+  updated_by                     Int?
+  created_at                     DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at                     DateTime?     @default(now()) @db.Timestamp(6)
+  order_items                    order_items[]
+  users_orders_created_byTousers users?        @relation("orders_created_byTousers", fields: [created_by], references: [id], onUpdate: NoAction, map: "fk_orders_created_by")
+  users_orders_updated_byTousers users?        @relation("orders_updated_byTousers", fields: [updated_by], references: [id], onUpdate: NoAction, map: "fk_orders_updated_by")
+  users_orders_user_idTousers    users         @relation("orders_user_idTousers", fields: [user_id], references: [id], onUpdate: NoAction, map: "fk_orders_user_id")
+  payments                       payments[]
+  shipment                       shipment[]
+
+  @@index([order_number], map: "idx_orders_order_number")
+  @@index([status], map: "idx_orders_status")
+  @@index([user_id], map: "idx_orders_user_id")
+  @@index([user_id, status], map: "idx_orders_user_status")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model payments {
+  id                               Int       @id @default(autoincrement())
+  order_id                         Int
+  email                            String    @db.VarChar(255)
+  card                             String?   @db.VarChar(4)
+  amount                           Decimal   @db.Decimal(12, 2)
+  status                           String?   @default("pending") @db.VarChar(50)
+  order_date                       DateTime? @default(now()) @db.Timestamp(6)
+  created_by                       Int?
+  updated_by                       Int?
+  created_at                       DateTime? @default(now()) @db.Timestamp(6)
+  updated_at                       DateTime? @default(now()) @db.Timestamp(6)
+  users_payments_created_byTousers users?    @relation("payments_created_byTousers", fields: [created_by], references: [id], onUpdate: NoAction, map: "fk_payments_created_by")
+  orders                           orders    @relation(fields: [order_id], references: [id], onUpdate: NoAction, map: "fk_payments_order_id")
+  users_payments_updated_byTousers users?    @relation("payments_updated_byTousers", fields: [updated_by], references: [id], onUpdate: NoAction, map: "fk_payments_updated_by")
+
+  @@index([email], map: "idx_payments_email")
+  @@index([order_id], map: "idx_payments_order_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model product_images {
+  id                                     Int       @id @default(autoincrement())
+  product_id                             Int
+  url                                    String    @db.VarChar(500)
+  alt_text                               String?   @db.VarChar(255)
+  is_primary                             Boolean?  @default(false)
+  position                               Int?      @default(0)
+  created_by                             Int?
+  updated_by                             Int?
+  created_at                             DateTime? @default(now()) @db.Timestamp(6)
+  updated_at                             DateTime? @default(now()) @db.Timestamp(6)
+  users_product_images_created_byTousers users?    @relation("product_images_created_byTousers", fields: [created_by], references: [id], onUpdate: NoAction, map: "fk_product_images_created_by")
+  products                               Product   @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_product_images_product_id")
+  users_product_images_updated_byTousers users?    @relation("product_images_updated_byTousers", fields: [updated_by], references: [id], onUpdate: NoAction, map: "fk_product_images_updated_by")
+
+  @@index([is_primary], map: "idx_product_images_is_primary")
+  @@index([position], map: "idx_product_images_position")
+  @@index([product_id], map: "idx_product_images_product_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model product_variants {
+  id                                       Int           @id @default(autoincrement())
+  product_id                               Int
+  weight                                   Decimal?      @db.Decimal(10, 3)
+  price                                    Decimal       @db.Decimal(12, 2)
+  quantity                                 Int           @default(0)
+  created_by                               Int?
+  updated_by                               Int?
+  created_at                               DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at                               DateTime?     @default(now()) @db.Timestamp(6)
+  order_items                              order_items[]
+  users_product_variants_created_byTousers users?        @relation("product_variants_created_byTousers", fields: [created_by], references: [id], onUpdate: NoAction, map: "fk_product_variants_created_by")
+  products                                 Product       @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_product_variants_product_id")
+  users_product_variants_updated_byTousers users?        @relation("product_variants_updated_byTousers", fields: [updated_by], references: [id], onUpdate: NoAction, map: "fk_product_variants_updated_by")
+
+  @@index([product_id], map: "idx_product_variants_product_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model shipment {
+  id                               Int       @id @default(autoincrement())
+  order_id                         Int
+  carrier_name                     String    @db.VarChar(100)
+  tracking_number                  String?   @unique @db.VarChar(100)
+  shipping_status                  String?   @default("preparing") @db.VarChar(50)
+  estimated_delivery               DateTime? @db.Date
+  created_by                       Int?
+  updated_by                       Int?
+  created_at                       DateTime? @default(now()) @db.Timestamp(6)
+  updated_at                       DateTime? @default(now()) @db.Timestamp(6)
+  users_shipment_created_byTousers users?    @relation("shipment_created_byTousers", fields: [created_by], references: [id], onUpdate: NoAction, map: "fk_shipment_created_by")
+  orders                           orders    @relation(fields: [order_id], references: [id], onUpdate: NoAction, map: "fk_shipment_order_id")
+  users_shipment_updated_byTousers users?    @relation("shipment_updated_byTousers", fields: [updated_by], references: [id], onUpdate: NoAction, map: "fk_shipment_updated_by")
+
+  @@index([order_id], map: "idx_shipment_order_id")
+  @@index([tracking_number], map: "idx_shipment_tracking")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  id                                                  Int                @id @default(autoincrement())
+  email                                               String             @unique @db.VarChar(255)
+  password                                            String             @db.VarChar(255)
+  username                                            String             @unique @db.VarChar(100)
+  phone                                               String?            @db.VarChar(20)
+  is_active                                           Boolean?           @default(true)
+  role                                                String?            @default("customer") @db.VarChar(50)
+  created_by                                          Int?
+  updated_by                                          Int?
+  created_at                                          DateTime?          @default(now()) @db.Timestamp(6)
+  updated_at                                          DateTime?          @default(now()) @db.Timestamp(6)
+  address_address_created_byTousers                   address[]          @relation("address_created_byTousers")
+  address_address_updated_byTousers                   address[]          @relation("address_updated_byTousers")
+  order_items_order_items_created_byTousers           order_items[]      @relation("order_items_created_byTousers")
+  order_items_order_items_updated_byTousers           order_items[]      @relation("order_items_updated_byTousers")
+  orders_orders_created_byTousers                     orders[]           @relation("orders_created_byTousers")
+  orders_orders_updated_byTousers                     orders[]           @relation("orders_updated_byTousers")
+  orders_orders_user_idTousers                        orders[]           @relation("orders_user_idTousers")
+  payments_payments_created_byTousers                 payments[]         @relation("payments_created_byTousers")
+  payments_payments_updated_byTousers                 payments[]         @relation("payments_updated_byTousers")
+  product_images_product_images_created_byTousers     product_images[]   @relation("product_images_created_byTousers")
+  product_images_product_images_updated_byTousers     product_images[]   @relation("product_images_updated_byTousers")
+  product_variants_product_variants_created_byTousers product_variants[] @relation("product_variants_created_byTousers")
+  product_variants_product_variants_updated_byTousers product_variants[] @relation("product_variants_updated_byTousers")
+  products_products_created_byTousers                 Product[]          @relation("products_created_byTousers")
+  products_products_updated_byTousers                 Product[]          @relation("products_updated_byTousers")
+  shipment_shipment_created_byTousers                 shipment[]         @relation("shipment_created_byTousers")
+  shipment_shipment_updated_byTousers                 shipment[]         @relation("shipment_updated_byTousers")
+  users_users_created_byTousers                       users?             @relation("users_created_byTousers", fields: [created_by], references: [id], onUpdate: NoAction, map: "fk_users_created_by")
+  other_users_users_created_byTousers                 users[]            @relation("users_created_byTousers")
+  users_users_updated_byTousers                       users?             @relation("users_updated_byTousers", fields: [updated_by], references: [id], onUpdate: NoAction, map: "fk_users_updated_by")
+  other_users_users_updated_byTousers                 users[]            @relation("users_updated_byTousers")
+
+  @@index([email], map: "idx_users_email")
+}

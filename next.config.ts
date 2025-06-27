@@ -1,11 +1,32 @@
-import type { NextConfig } from "next";
+import { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
-    domains: [
-      "images.pexels.com",      // vous pouvez garder celui-ci si vous l'utilisez ailleurs
-      "source.unsplash.com",    // permet d'utiliser des images dynamiques d'Unsplash
-      "images.unsplash.com"     // certaines URLs d'Unsplash passent aussi par ce domaine
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "source.unsplash.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "i.ibb.co",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };

@@ -4,12 +4,12 @@ import { StaticImport } from 'next/dist/shared/lib/get-img-props';
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 type CartItem = {
-  price: number;
-  image: string | StaticImport;
-  title: string;
   id: number;
+  title: string;
+  price: number;
+  image: string;
   quantity: number;
-  variant: string;
+  variant?: string | number; // optionnel selon ta logique
 };
 
 type CartContextType = {
